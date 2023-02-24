@@ -56,18 +56,15 @@ const Info = styled.div`
 const Card = ({ type,video }) => {
   const [channel,setChannel] = useState({});
 
-  console.log(video.userId)
   
   useState(() => {
     const fetchChannel =async ()=>{
        const res =await axios.get(`${process.env.REACT_APP_API_URL}/users/find/${video.userId}`)
-       console.log(res.data)
+       //console.log(res.data)
        setChannel(res.data);
       }
     fetchChannel()
   },[])
-
-  //console.log(channel)
 
 return (
 

@@ -1,4 +1,6 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -64,19 +66,59 @@ const Link = styled.span`
 `;
 
 const SignIn = () => {
+  const [name,setName] = useState("");
+  const [email,setEmail] = useState("")
+  const [password,setPassword] = useState("")
+  
+  const [lname,setLName] = useState("");
+  const [lpassword,setLPassword] = useState("")
+  const navigate = useNavigate();
+  
+  const handleSignup = async (e) =>{
+   try {
+    e.preventDefault();
+    console.log(name,email,password)
+    await axios.post(`${process.env.REACT_APP_API_URL}/auth/signup`,{name,email,password})
+    alert(`${name} successfully signed up`)
+    setEmail("");
+    setName("");
+    setPassword("");
+   } catch (error) {
+    console.log(error)
+   }
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    console.log(lname,lpassword)
+    //dispatch(loginStart());
+    try {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signin`, { name:lname, password:lpassword });
+      //dispatch(loginSuccess(res.data));
+      navigate("/")
+    } catch (err) {
+      //dispatch(loginFailure());
+    }
+  };
+
   return (
     <Container>
       <Wrapper>
         <Title>Sign in</Title>
         <SubTitle>to continue to LamaTube</SubTitle>
-        <Input placeholder="username" />
-        <Input type="password" placeholder="password" />
-        <Button>Sign in</Button>
+        <Input placeholder="username" value={lname}
+          onChange={(e) => setLName(e.target.value)}/>
+        <Input type="password" placeholder="password"
+           value={lpassword}
+          onChange={(e) => setLPassword(e.target.value)} />
+        <Button onClick={handleLogin}>Sign in</Button>
+
         <Title>or</Title>
-        <Input placeholder="username" />
-        <Input placeholder="email" />
-        <Input type="password" placeholder="password" />
-        <Button>Sign up</Button>
+        
+        <Input placeholder="username" value={name} onChange={(e) => setName(e.target.value)}  />
+        <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)}  />
+        <Input type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)}  />
+        <Button onClick={handleSignup}>Sign up</Button>
       </Wrapper>
       <More>
         English(USA)
