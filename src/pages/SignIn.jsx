@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+import { useSelector, useDispatch } from 'react-redux'
 
 const Container = styled.div`
   display: flex;
@@ -72,6 +74,8 @@ const SignIn = () => {
   
   const [lname,setLName] = useState("");
   const [lpassword,setLPassword] = useState("")
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   
   const handleSignup = async (e) =>{
@@ -91,13 +95,13 @@ const SignIn = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     console.log(lname,lpassword)
-    //dispatch(loginStart());
+    dispatch(loginStart());
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signin`, { name:lname, password:lpassword });
-      //dispatch(loginSuccess(res.data));
+      dispatch(loginSuccess(res.data));
       navigate("/")
     } catch (err) {
-      //dispatch(loginFailure());
+      dispatch(loginFailure());
     }
   };
 
