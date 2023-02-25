@@ -2,8 +2,10 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+import { loginFailure, loginStart, loginSuccess, logout } from "../redux/userSlice";
 import { useSelector, useDispatch } from 'react-redux'
+import { auth, provider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const Container = styled.div`
   display: flex;
@@ -105,6 +107,43 @@ const SignIn = () => {
     }
   };
 
+  const signInWithGoogle = async (e) => {
+    dispatch(loginStart());
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        axios
+          .post(`${process.env.REACT_APP_API_URL}/auth/google`, {
+            name: result.user.displayName,
+            email: result.user.email,
+            img: result.user.photoURL,
+          })
+          .then((res) => {
+            console.log(res)
+            dispatch(loginSuccess(res.data));
+            navigate("/")
+          });
+      })
+      .catch((error) => {
+        dispatch(loginFailure());
+      });
+    
+    // try {
+    //  dispatch(loginStart());
+    //   const result = await signInWithPopup(auth,provider)
+
+    //   const resp = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google`,{
+    //     name: result.user.displayName,
+    //     email: result.user.email,
+    //     img: result.user.photoURL,
+    //   })
+    //   dispatch(loginSuccess(resp.data))
+    //   navigate("/")
+    // } catch (error) {
+    //  dispatch(loginFailure()) 
+    // }
+  }
+
+
   return (
     <Container>
       <Wrapper>
@@ -118,7 +157,10 @@ const SignIn = () => {
         <Button onClick={handleLogin}>Sign in</Button>
 
         <Title>or</Title>
-        
+        <Button onClick={signInWithGoogle}>Signin with Google</Button>
+
+        <Title>or</Title>
+
         <Input placeholder="username" value={name} onChange={(e) => setName(e.target.value)}  />
         <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)}  />
         <Input type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)}  />
