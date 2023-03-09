@@ -30,7 +30,7 @@ const Input = styled.input`
 
 const Comments = ({videoId}) => {
 
-const currentUser = useSelector((state)=> state.user.currentUser.others)
+const currentUser = useSelector((state)=> state.user?.currentUser?.others)
 //console.log(currentUser)
 
 const [comments,setComments] = useState([])
@@ -50,7 +50,7 @@ useEffect(()=>{
   return (
     <Container>
       <NewComment>
-        <Avatar src={currentUser.img} />
+        <Avatar src={currentUser?.img} />
         <Input placeholder="Add a comment..." />
       </NewComment>
       {

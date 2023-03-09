@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/userSlice";
 import Cookies from "js-cookie"
+import axios from "axios";
+import Upload from "./Upload";
 
 const Container = styled.div`
   position: sticky;
@@ -73,7 +75,10 @@ const User = styled.div`
   color: ${({ theme }) => theme.text};
 `
 const Navbar = () => {
- const currentUser = useSelector((state)=>state.user.currentUser.others)
+  const navigate = useNavigate()
+  const [open, setOpen] = useState(false);
+
+ const currentUser = useSelector((state)=>state.user?.currentUser?.others)
  const dispatch = useDispatch()
  //console.log("currentUser: ", currentUser)
  
@@ -81,7 +86,11 @@ const Navbar = () => {
   await dispatch(logout())
   await Cookies.remove('access_token');
  }
+
+
+
  return (
+    <>
     <Container>
       <Wrapper>
         <Search>
@@ -91,7 +100,9 @@ const Navbar = () => {
         {
           currentUser ? (
             <User>
-              <VideoCallOutlinedIcon/>
+              <VideoCallOutlinedIcon onClick={()=>{
+                console.log("click open")
+                setOpen(true)}}/>
               <Avatar src={currentUser.img} onClick={handleLogout} />
               <p style={{color: "blue"}}> {currentUser.name}</p>
             </User>
@@ -105,6 +116,8 @@ const Navbar = () => {
        
       </Wrapper>
     </Container>
+    {open && <Upload setOpen={setOpen} />}
+    </>
   );
 };
 
