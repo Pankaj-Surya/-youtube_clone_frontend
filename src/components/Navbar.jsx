@@ -73,7 +73,7 @@ const User = styled.div`
   color: ${({ theme }) => theme.text};
 `
 const Navbar = () => {
- const {currentUser} = useSelector((state)=>state.user)
+ const currentUser = useSelector((state)=>state.user.currentUser.others)
  const dispatch = useDispatch()
  //console.log("currentUser: ", currentUser)
  

@@ -133,7 +133,7 @@ const Video = () => {
   useEffect(()=>{
   const fetchData =async () =>{
     const vidRes = await axios.get(`${process.env.REACT_APP_API_URL}/videos/find/${path}`)
-    console.log("vid res",vidRes.data)
+    //console.log("vid res",vidRes.data)
     const channelRes = await axios.get(`${process.env.REACT_APP_API_URL}/users/find/${vidRes.data.userId}`)
     //console.log("channel res ",channelRes.data)
     setChannel(channelRes.data)
@@ -189,7 +189,7 @@ const Video = () => {
 
     subsUser ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token })  : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
     dispatch(subscription(currentUser.others._id));
-    console.log(subsUser) 
+    //console.log(subsUser) 
   } catch (error) {
     console.log(error)
    }
@@ -246,7 +246,7 @@ const Video = () => {
                     ? "Subscribed" : "Subscribe"} </Subscribe>
         </Channel>
         <Hr />
-        <Comments/>
+        <Comments videoId={currentVideo._id}/>
       </Content>
       <Recommendation>    
       </Recommendation>
