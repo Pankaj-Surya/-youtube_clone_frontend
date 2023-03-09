@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Video from "./pages/Video";
 import SignIn from "./pages/SignIn";
+import Search from "./pages/Search";
 //import  Search  from "./pages/Search";
 
 
@@ -39,7 +40,7 @@ function App() {
                   <Route index element={<Home type="random" />} />
                   <Route path="/trends" element={<Home type="trend" />} />
                   <Route path="/sub" element={<Home type="sub" />} />
-                  {/* <Route path="/search" element={<Search />} /> */}
+                  <Route path="/search" element={<Search />} />
                   <Route path="signin" element={<SignIn />} />
                   <Route path="video">
                     <Route path=":id" element={<Video />} />

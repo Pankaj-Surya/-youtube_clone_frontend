@@ -136,8 +136,6 @@ function Upload({setOpen}) {
     }, [img]);
 
 
-
-
     const handleUpload = async (e) => {
         e.preventDefault();
         const res = await axios.post(`${process.env.REACT_APP_API_URL}/videos`, { ...inputs, tags,token : localStorage.getItem("access_token") })

@@ -77,7 +77,7 @@ const User = styled.div`
 const Navbar = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false);
-
+  const [q,setQ] = useState("");
  const currentUser = useSelector((state)=>state.user?.currentUser?.others)
  const dispatch = useDispatch()
  //console.log("currentUser: ", currentUser)
@@ -94,8 +94,9 @@ const Navbar = () => {
     <Container>
       <Wrapper>
         <Search>
-          <Input placeholder="Search" />
-          <SearchOutlinedIcon />
+          <Input placeholder="Search"
+          onChange={(e) => setQ(e.target.value)} />
+          <SearchOutlinedIcon onClick={()=> navigate(`/search?q=${q}`)} />
         </Search>
         {
           currentUser ? (
