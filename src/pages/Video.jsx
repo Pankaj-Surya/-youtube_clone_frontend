@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Children, useEffect, useState } from "react";
 import styled from "styled-components";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -14,7 +14,6 @@ import axios from "axios";
 import {dislike, fetchSuccess, like} from "../redux/videoSlice"
 import { format } from "timeago.js";
 import { subscription } from "../redux/userSlice";
-import jwtInterceptor from "../jwtInterceptor";
 
 const Container = styled.div`
   display: flex;
@@ -121,7 +120,7 @@ const VideoFrame = styled.video`
 
 
 const Video = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const {currentUser} = useSelector((state) => state.user);
   const {currentVideo} = useSelector((state)=>state.video)
 
   const [channel,setChannel] = useState({})
@@ -170,26 +169,17 @@ const Video = () => {
 
   const handleSub = async () => {
    try {
+    console.log("sub started");   
     const token = localStorage.getItem("access_token")
     console.log(channel._id)
-     let subsUser = await currentUser?.others.subscribedUsers?.includes(channel._id)
-    // console.log(subsUser)
-  //   console.log(currentUser.others)
-  //   let arr = currentUser.others.subscribedUsers;
-  //  const status =  arr.map(id => {
-  //    return id === channel._id 
-  //   })
-
-    // if(status){
-    //   await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token }) 
-    // }else{
-    //   await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
-    // }
-
-
+    let subsUser = await currentUser?.others?.subscribedUsers?.includes(channel._id)
+    console.log(subsUser)
+    let subsUserArr = await currentUser?.others.subscribedUsers
+    console.log(subsUserArr)
     subsUser ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token })  : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
     dispatch(subscription(currentUser.others._id));
     //console.log(subsUser) 
+    console.log("sub end")
   } catch (error) {
     console.log(error)
    }
@@ -242,8 +232,16 @@ const Video = () => {
               </Description>
             </ChannelDetail>
           </ChannelInfo>
-          <Subscribe onClick={handleSub}>{ currentUser && currentUser.others.subscribedUsers?.includes(channel._id)
-                    ? "Subscribed" : "Subscribe"} </Subscribe>
+          {/* logged in user == currvid user =>then  dont show sub button */}
+          {
+            currentUser?.others?._id === currentVideo?.userId
+              ? <Subscribe>My Channel</Subscribe>
+              : <Subscribe onClick={handleSub}>
+                {currentUser?.others?.subscribedUsers?.includes(channel._id)
+                  ? "SUBSCRIBED"
+                  : "SUBSCRIBE"}
+              </Subscribe>
+          }
         </Channel>
         <Hr />
         <Comments videoId={currentVideo._id}/>

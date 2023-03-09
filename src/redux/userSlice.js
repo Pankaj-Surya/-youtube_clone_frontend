@@ -31,15 +31,16 @@ export const userSlice = createSlice({
         },
         subscription : (state,action) =>{
           // if present, then unsubscribe 
-          if(state.currentUser.others.subscribedUsers.includes(action.payload)){
+          if (state.currentUser.others.subscribedUsers.includes(action.payload)) {
             state.currentUser.others.subscribedUsers.splice(
-              state.currentUser.others.subscribedUsers.findIndex(
-                (channelId) => channelId === action.payload
-              ),1
-            )
-          }else{
-            state.currentUser.others.subscribedUsers.push(action.payload)
-          }
+                state.currentUser.others.subscribedUsers.findIndex(
+                    (channelId) => channelId === action.payload
+                ),
+                1
+            );
+        } else {
+            state.currentUser.others.subscribedUsers.push(action.payload);
+        }
         }
     }
 }

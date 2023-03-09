@@ -6,7 +6,6 @@ import { loginFailure, loginStart, loginSuccess, logout } from "../redux/userSli
 import { useSelector, useDispatch } from 'react-redux'
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
-import jwtInterceptor from "../jwtInterceptor"
 import jwt_decode from "jwt-decode";
 
 const Container = styled.div`
@@ -85,44 +84,6 @@ const SignIn = () => {
 
   const navigate = useNavigate();
   
-  //   const refreshToken = async () => {
-  //   try {
-  //     console.log("refresh ",user.refreshToken)
-  //     const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/refresh`, { token: user.refreshToken });
-  //     setUser({
-  //       ...user,
-  //       accessToken: res.data.accessToken,
-  //       refreshToken: res.data.refreshToken,
-  //     });
-  //     return res.data;
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  // const axiosJWT = axios.create()
-
-  // axiosJWT.interceptors.request.use(
-  //   async (config) => {
-  //     console.log("config = " + config);
-  //     let currentDate = new Date();
-  //     const decodedToken = jwt_decode(user.accessToken);
-  //     if (decodedToken.exp * 1000 < currentDate.getTime()) {
-  //       const data = await refreshToken();
-  //       console.log("data = ", data);
-  //       config.headers["authorization"] = "Bearer " + data.accessToken;
-  //     }
-  //     return config;
-  //   },
-  //   (error) => {
-  //     return Promise.reject(error);
-  //   }
-  // );
-
-  
-
- 
-
 
   const handleSignup = async (e) =>{
    try {
@@ -159,7 +120,7 @@ const SignIn = () => {
     dispatch(loginStart());
     signInWithPopup(auth, provider)
       .then((result) => {
-        jwtInterceptor
+        axios
           .post(`${process.env.REACT_APP_API_URL}/auth/google`, {
             name: result.user.displayName,
             email: result.user.email,
@@ -168,6 +129,8 @@ const SignIn = () => {
           .then((res) => {
             console.log(res)
             dispatch(loginSuccess(res.data));
+            //console.log(res.data)
+            localStorage.setItem("access_token", res.data.access_token);
             navigate("/")
           });
       })
