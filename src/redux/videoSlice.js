@@ -50,9 +50,10 @@ export const videoSlice = createSlice({
               )
           } 
         }
+        
     }
 }
 )
-export const {loginStart,loginSuccess,loginFailure,logout,like,dislike} = videoSlice.actions
+export const {fetchSuccess,fetchFailure,fetchStart,like,dislike,subscribe} = videoSlice.actions
 
 export default videoSlice.reducer

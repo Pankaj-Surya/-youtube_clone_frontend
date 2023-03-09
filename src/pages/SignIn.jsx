@@ -6,6 +6,8 @@ import { loginFailure, loginStart, loginSuccess, logout } from "../redux/userSli
 import { useSelector, useDispatch } from 'react-redux'
 import { auth, provider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
+import jwtInterceptor from "../jwtInterceptor"
+import jwt_decode from "jwt-decode";
 
 const Container = styled.div`
   display: flex;
@@ -76,10 +78,52 @@ const SignIn = () => {
   
   const [lname,setLName] = useState("");
   const [lpassword,setLPassword] = useState("")
+ 
+  const [user, setUser] = useState(null);
+ 
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
   
+  //   const refreshToken = async () => {
+  //   try {
+  //     console.log("refresh ",user.refreshToken)
+  //     const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/refresh`, { token: user.refreshToken });
+  //     setUser({
+  //       ...user,
+  //       accessToken: res.data.accessToken,
+  //       refreshToken: res.data.refreshToken,
+  //     });
+  //     return res.data;
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  // const axiosJWT = axios.create()
+
+  // axiosJWT.interceptors.request.use(
+  //   async (config) => {
+  //     console.log("config = " + config);
+  //     let currentDate = new Date();
+  //     const decodedToken = jwt_decode(user.accessToken);
+  //     if (decodedToken.exp * 1000 < currentDate.getTime()) {
+  //       const data = await refreshToken();
+  //       console.log("data = ", data);
+  //       config.headers["authorization"] = "Bearer " + data.accessToken;
+  //     }
+  //     return config;
+  //   },
+  //   (error) => {
+  //     return Promise.reject(error);
+  //   }
+  // );
+
+  
+
+ 
+
+
   const handleSignup = async (e) =>{
    try {
     e.preventDefault();
@@ -97,10 +141,14 @@ const SignIn = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     console.log(lname,lpassword)
+    axios.defaults.withCredentials = true;
     dispatch(loginStart());
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signin`, { name:lname, password:lpassword });
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signin`, { name:lname, password:lpassword }, { withCredentials: true });
+      setUser(res.data);
       dispatch(loginSuccess(res.data));
+      console.log(res.data);
+      localStorage.setItem('access_token', res.data.accessToken);
       navigate("/")
     } catch (err) {
       dispatch(loginFailure());
@@ -111,7 +159,7 @@ const SignIn = () => {
     dispatch(loginStart());
     signInWithPopup(auth, provider)
       .then((result) => {
-        axios
+        jwtInterceptor
           .post(`${process.env.REACT_APP_API_URL}/auth/google`, {
             name: result.user.displayName,
             email: result.user.email,

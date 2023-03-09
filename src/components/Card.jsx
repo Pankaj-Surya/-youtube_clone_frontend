@@ -64,11 +64,12 @@ const Card = ({ type,video }) => {
        setChannel(res.data);
       }
     fetchChannel()
-  },[])
+  },[video?.userId])
+  
+  //console.log("vidId",video)
+  return (
 
-return (
-
- <Link to={`${process.env.REACT_APP_API_URL}/video/${video._id}`} style={{ textDecoration: "none" }}>
+ <Link to={`/video/${video?._id}`} style={{ textDecoration: "none" }}>
       <Container type={type}>
         <Image
           type={type}

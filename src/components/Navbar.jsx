@@ -6,6 +6,7 @@ import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/userSlice";
+import Cookies from "js-cookie"
 
 const Container = styled.div`
   position: sticky;
@@ -76,8 +77,9 @@ const Navbar = () => {
  const dispatch = useDispatch()
  //console.log("currentUser: ", currentUser)
  
- const handleLogout = (e) =>{
-  dispatch(logout())
+ const handleLogout = async (e) =>{
+  await dispatch(logout())
+  await Cookies.remove('access_token');
  }
  return (
     <Container>
