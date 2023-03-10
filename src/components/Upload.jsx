@@ -67,7 +67,15 @@ const Button = styled.button`
   cursor: pointer;
   background-color: ${({ theme }) => theme.soft};
   color: ${({ theme }) => theme.textSoft};
+  &:disabled{
+    background-color: #480963;
+    cursor: not-allowed;
+  }
+
 `;
+
+
+
 const Label = styled.label`
   font-size: 14px;
 `;
@@ -186,7 +194,7 @@ function Upload({setOpen}) {
                         onChange={(e) => setImg(e.target.files[0])}
                     />
                 )}
-                <Button onClick={handleUpload}>Upload</Button>
+                <Button disabled={(imgPerc<=99 && videoPerc<=99) ? true : false} onClick={handleUpload}>Upload</Button>
             </Wrapper>
         </Container>
     )

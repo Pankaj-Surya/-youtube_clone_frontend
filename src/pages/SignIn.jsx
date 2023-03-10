@@ -101,15 +101,15 @@ const SignIn = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(lname,lpassword)
+    //console.log(lname,lpassword)
     axios.defaults.withCredentials = true;
     dispatch(loginStart());
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signin`, { name:lname, password:lpassword }, { withCredentials: true });
       setUser(res.data);
       dispatch(loginSuccess(res.data));
-      console.log(res.data);
-      localStorage.setItem('access_token', res.data.accessToken);
+      //console.log(res.data);
+      localStorage.setItem("access_token", res.data.access_token);
       navigate("/")
     } catch (err) {
       dispatch(loginFailure());
@@ -127,9 +127,9 @@ const SignIn = () => {
             img: result.user.photoURL,
           })
           .then((res) => {
-            console.log(res)
+            //console.log(res)
             dispatch(loginSuccess(res.data));
-            //console.log(res.data)
+            console.log(res.data.access_token)
             localStorage.setItem("access_token", res.data.access_token);
             navigate("/")
           });

@@ -77,47 +77,58 @@ const User = styled.div`
 const Navbar = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false);
-  const [q,setQ] = useState("");
- const currentUser = useSelector((state)=>state.user?.currentUser?.others)
- const dispatch = useDispatch()
- //console.log("currentUser: ", currentUser)
- 
- const handleLogout = async (e) =>{
-  await dispatch(logout())
-  await Cookies.remove('access_token');
- }
+  const [q, setQ] = useState("");
+  const currentUser = useSelector((state) => state.user?.currentUser?.others)
+  const dispatch = useDispatch()
+  //console.log("currentUser: ", currentUser)
+
+  const handleLogout = async (e) => {
+    await dispatch(logout())
+    await Cookies.remove('access_token');
+    localStorage.removeItem("access_token");
+  }
+
+  // const handleSearchEnter = (e) => {
+  //   e.preventDefault();
+  //   if(e.key === "Enter"){
+  //      console.log("Hello enter")
+  //      console.log(q)
+  //   }
+  //   //setQ("")
+  // }
 
 
-
- return (
+  return (
     <>
-    <Container>
-      <Wrapper>
-        <Search>
-          <Input placeholder="Search"
-          onChange={(e) => setQ(e.target.value)} />
-          <SearchOutlinedIcon onClick={()=> navigate(`/search?q=${q}`)} />
-        </Search>
-        {
-          currentUser ? (
-            <User>
-              <VideoCallOutlinedIcon onClick={()=>{
-                console.log("click open")
-                setOpen(true)}}/>
-              <Avatar src={currentUser.img} onClick={handleLogout} />
-              <p style={{color: "blue"}}> {currentUser.name}</p>
-            </User>
-          ) : ( <Link to="signin" style={{ textDecoration: "none" }}>
-          <Button>
-            <AccountCircleOutlinedIcon />
-            SIGN IN
-          </Button>
-        </Link>)
-        }
-       
-      </Wrapper>
-    </Container>
-    {open && <Upload setOpen={setOpen} />}
+      <Container>
+        <Wrapper>
+          <Search>
+          {/* onKeyPress={handleSearchEnter} */}
+            <Input placeholder="Search"
+              onChange={(e) => setQ(e.target.value)}  />
+            <SearchOutlinedIcon onClick={() => navigate(`/search?q=${q}`)}   />
+          </Search>
+          {
+            currentUser ? (
+              <User>
+                <VideoCallOutlinedIcon onClick={() => {
+                  console.log("click open")
+                  setOpen(true)
+                }} />
+                <Avatar src={currentUser.img} onClick={handleLogout} />
+                <p style={{ color: "blue" }}> {currentUser.name}</p>
+              </User>
+            ) : (<Link to="signin" style={{ textDecoration: "none" }}>
+              <Button>
+                <AccountCircleOutlinedIcon />
+                SIGN IN
+              </Button>
+            </Link>)
+          }
+
+        </Wrapper>
+      </Container>
+      {open && <Upload setOpen={setOpen} />}
     </>
   );
 };
