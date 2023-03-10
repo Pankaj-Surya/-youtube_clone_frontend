@@ -136,6 +136,10 @@ const Video = () => {
     const channelRes = await axios.get(`${process.env.REACT_APP_API_URL}/users/find/${vidRes.data.userId}`)
     //console.log("channel res ",channelRes.data)
     setChannel(channelRes.data)
+    if (currentUser) {
+      await axios.put(`${process.env.REACT_APP_API_URL}/videos/view/${path}`);
+      console.log("Views Increased!")
+    }
     dispatch(fetchSuccess(vidRes.data))
   }
   fetchData()
@@ -246,7 +250,7 @@ const Video = () => {
         <Hr />
         <Comments videoId={currentVideo._id}/>
       </Content>
-      {console.log(currentVideo.tags)}
+      {/* {console.log(currentVideo.tags)} */}
       <Recommendation tags={currentVideo.tags}/>   
     </Container>
   );
