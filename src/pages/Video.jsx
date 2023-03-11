@@ -122,13 +122,14 @@ const VideoFrame = styled.video`
 const Video = () => {
   const {currentUser} = useSelector((state) => state.user);
   const {currentVideo} = useSelector((state)=>state.video)
-
+  const [isSubUser,setIsSubUser] = useState(false)
   const [channel,setChannel] = useState({})
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [comment,setComment] = useState([])
   const path = useLocation().pathname.split('/')[2]
   
+
   useEffect(()=>{
   const fetchData =async () =>{
     const vidRes = await axios.get(`${process.env.REACT_APP_API_URL}/videos/find/${path}`)
@@ -136,6 +137,12 @@ const Video = () => {
     const channelRes = await axios.get(`${process.env.REACT_APP_API_URL}/users/find/${vidRes.data.userId}`)
     //console.log("channel res ",channelRes.data)
     setChannel(channelRes.data)
+
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/comments/${path}`)
+    //console.log(res.data)
+    setComment(res.data)
+ 
+    //console.log(comment)
     if (currentUser) {
       await axios.put(`${process.env.REACT_APP_API_URL}/videos/view/${path}`);
       console.log("Views Increased!")
@@ -171,23 +178,32 @@ const Video = () => {
     
   };
 
+  // const handleSub = async () => {
+  //  try {
+  //   console.log("sub started");   
+  //   const token = localStorage.getItem("access_token")
+  //   console.log(channel._id)
+  //   let subsUser = await currentUser?.others?.subscribedUsers?.includes(channel._id)
+  //    setIsSubUser(subsUser)
+  //   console.log(isSubUser)
+  //   let subsUserArr = await currentUser?.others.subscribedUsers
+  //   console.log(subsUserArr)
+  //   isSubUser ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token })  : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
+  //   dispatch(subscription(currentUser.others._id));
+  //   //console.log(subsUser) 
+  //   console.log("sub end")
+  // } catch (error) {
+  //   console.log(error)
+  //  }
+  // }
+
   const handleSub = async () => {
-   try {
-    console.log("sub started");   
-    const token = localStorage.getItem("access_token")
-    console.log(channel._id)
-    let subsUser = await currentUser?.others?.subscribedUsers?.includes(channel._id)
-    console.log(subsUser)
-    let subsUserArr = await currentUser?.others.subscribedUsers
-    console.log(subsUserArr)
-    subsUser ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token })  : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
-    dispatch(subscription(currentUser.others._id));
-    //console.log(subsUser) 
-    console.log("sub end")
-  } catch (error) {
-    console.log(error)
-   }
-  }
+    const token = localStorage.getItem("access_token");
+    currentUser?.others?.subscribedUsers.includes(channel._id)
+      ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`, { token: token })
+      : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`, { token: token });
+    dispatch(subscription(channel._id));
+  };
   //console.log(currentUser)
   //console.log(path)
   return (
@@ -198,7 +214,7 @@ const Video = () => {
         </VideoWrapper>
         <Title>{currentVideo?.title}</Title>
         <Details>
-          <Info>  {currentVideo?.views} views • {format(currentVideo.createdAt)}</Info>
+          <Info>  {currentVideo?.views} views • {format(currentVideo?.createdAt)}</Info>
           <Buttons>
             <Button onClick={handleLike}>
               {
@@ -206,7 +222,7 @@ const Video = () => {
                 (<ThumbUpIcon /> ) :
                (<ThumbUpOutlinedIcon /> )
               }
-              {currentVideo.likes?.length}
+              {currentVideo?.likes?.length}
             </Button>
             <Button onClick={handleDislike}>
               {currentVideo?.dislikes?.includes(currentUser?._id) ? (
@@ -232,7 +248,7 @@ const Video = () => {
               <ChannelName>{channel.name}</ChannelName>
               <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
               <Description>
-                 {currentVideo.desc}.
+                 {currentVideo?.desc}.
               </Description>
             </ChannelDetail>
           </ChannelInfo>
@@ -248,10 +264,11 @@ const Video = () => {
           }
         </Channel>
         <Hr />
-        <Comments videoId={currentVideo._id}/>
+        <Comments videoId={currentVideo?._id} comment={comment}/>
       </Content>
       {/* {console.log(currentVideo.tags)} */}
-      <Recommendation tags={currentVideo.tags}/>   
+      <Recommendation tags={currentVideo?.tags}/>  
+      <Recommendation />    
     </Container>
   );
 };

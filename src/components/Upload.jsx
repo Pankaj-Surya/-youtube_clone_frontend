@@ -194,7 +194,7 @@ function Upload({setOpen}) {
                         onChange={(e) => setImg(e.target.files[0])}
                     />
                 )}
-                <Button disabled={(imgPerc<=99 && videoPerc<=99) ? true : false} onClick={handleUpload}>Upload</Button>
+                <Button disabled={(videoPerc<=99 && imgPerc==99) ? true : false} onClick={handleUpload}>Upload</Button>
             </Wrapper>
         </Container>
     )

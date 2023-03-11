@@ -8,7 +8,9 @@ import Home from "./pages/Home";
 import Video from "./pages/Video";
 import SignIn from "./pages/SignIn";
 import Search from "./pages/Search";
-//import  Search  from "./pages/Search";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+
 
 
 
@@ -27,7 +29,11 @@ const Wrapper = styled.div`
 function App() {
   const [darkMode, setDarkMode] = useState(true);
 
+  // intialize
+  const queryClient = new QueryClient();
+  
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
         <BrowserRouter>
@@ -52,6 +58,7 @@ function App() {
         </BrowserRouter>
       </Container>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 

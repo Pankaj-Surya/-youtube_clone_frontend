@@ -1,8 +1,10 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { json } from "react-router-dom";
 import styled from "styled-components";
 import Comment from "./Comment";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Container = styled.div``;
 
@@ -28,37 +30,103 @@ const Input = styled.input`
   width: 100%;
 `;
 
-const Comments = ({videoId}) => {
+const Button = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  background-color: white;
+  padding: 5px;
+`;
 
-const currentUser = useSelector((state)=> state.user?.currentUser?.others)
-//console.log(currentUser)
+const Comments = ({ videoId }) => {
+  const [desc, setDesc] = useState("")
+  const currentUser = useSelector((state) => state.user?.currentUser?.others)
+  //console.log(currentUser)
+  const dispatch = useDispatch()
 
-const [comments,setComments] = useState([])
+  const { isLoading, error, data } = useQuery(["comments"], () =>
+    axios.get(`${process.env.REACT_APP_API_URL}/comments/${videoId}`).then((res) => {
+      return res.data;
+    })
+  );
 
-useEffect(()=>{
- const fetchComments = async () =>{
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/comments/${videoId}`)
-      setComments(res.data)
-    } catch (error) {
-      console.log(error)
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(
+    (newComment) => {
+      return axios.post(`${process.env.REACT_APP_API_URL}/comments/`, newComment);
+    },
+    {
+      onSuccess: () => {
+        // Invalidate and refetch
+        queryClient.invalidateQueries(["comments"]);
+      },
     }
- }
- fetchComments()
-},[videoId])
+  );
+
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (desc !== "") {
+      mutation.mutate({ desc, videoId, token: localStorage.getItem("access_token") });
+      setDesc("");
+    }
+  }
+
+
+  // const [comments, setComments] = useState([])
+  // const myArray = useRef([]);
+
+  // //console.log("cmts: ", myArray)
+  // useEffect(() => {
+  //   const fetchComments = async () => {
+  //     try {
+  //       const res = await axios.get(`${process.env.REACT_APP_API_URL}/comments/${videoId}`)
+  //       //console.log(res.data)
+  //       setComments(res.data.map(comment => comment))
+  //       //console.log(comments)
+  //       myArray.current = res.data
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  //   fetchComments()
+  // }, [videoId])
+
+  // //console.log(comments)
+  // const handleComment = async () => {
+  //   try {
+  //     if (currentUser) {
+  //       const res = await axios.post(`${process.env.REACT_APP_API_URL}/comments/`, { desc, videoId, token: localStorage.getItem("access_token") })
+  //       //    dispatch(commentsSuccess(res.data))
+  //       ///myArray.current.push(res.data)
+  //       setDesc(" ")
+  //     } else {
+  //       alert("Please Login First!")
+  //       return
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+
+
 
   return (
     <Container>
       <NewComment>
         <Avatar src={currentUser?.img} />
-        <Input placeholder="Add a comment..." />
+        <Input placeholder="Add a comment..." value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <Button onClick={handleComment}>Post</Button>
       </NewComment>
       {
-        comments?.map(comment => (
-          <Comment key={comment._id} comment={comment}/>
+        data?.map(comment => (
+          <Comment key={comment._id} comment={comment} />
         ))
       }
-      
+
     </Container>
   );
 };
