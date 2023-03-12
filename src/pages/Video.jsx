@@ -14,7 +14,7 @@ import axios from "axios";
 import {dislike, fetchSuccess, like} from "../redux/videoSlice"
 import { format } from "timeago.js";
 import { subscription } from "../redux/userSlice";
-
+import Recommendation from "../components/Recommendation";
 const Container = styled.div`
   display: flex;
   gap: 24px;
@@ -61,9 +61,7 @@ const Hr = styled.hr`
   border: 0.5px solid ${({ theme }) => theme.soft};
 `;
 
-const Recommendation = styled.div`
-  flex: 2;
-`;
+
 const Channel = styled.div`
   display: flex;
   justify-content: space-between;
@@ -153,14 +151,10 @@ const Video = () => {
   },[path,dispatch])
 
   const handleLike =async () =>{
-    console.log("clk like")
-   
-    //console.log( localStorage.getItem("access_token")) 
     const token = localStorage.getItem("access_token")
     if(currentUser){
       await axios.put(`${process.env.REACT_APP_API_URL}/users/like/${currentVideo._id}`,{token : token })
       dispatch(like(currentUser._id))
-      console.log("clk like end") 
     }else{
      alert("Please Login first")    
      return navigate("/signin") 
@@ -173,36 +167,24 @@ const Video = () => {
       await axios.put(`${process.env.REACT_APP_API_URL}/users/dislike/${currentVideo._id}`,{token : token });
       dispatch(dislike(currentUser._id));
     }else{
+      alert("Please Login first")    
       navigate("/signin")
     }
     
   };
 
-  // const handleSub = async () => {
-  //  try {
-  //   console.log("sub started");   
-  //   const token = localStorage.getItem("access_token")
-  //   console.log(channel._id)
-  //   let subsUser = await currentUser?.others?.subscribedUsers?.includes(channel._id)
-  //    setIsSubUser(subsUser)
-  //   console.log(isSubUser)
-  //   let subsUserArr = await currentUser?.others.subscribedUsers
-  //   console.log(subsUserArr)
-  //   isSubUser ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`,{token : token })  : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`,{token : token })
-  //   dispatch(subscription(currentUser.others._id));
-  //   //console.log(subsUser) 
-  //   console.log("sub end")
-  // } catch (error) {
-  //   console.log(error)
-  //  }
-  // }
 
   const handleSub = async () => {
     const token = localStorage.getItem("access_token");
-    currentUser?.others?.subscribedUsers.includes(channel._id)
+    if(currentUser){
+      currentUser?.others?.subscribedUsers.includes(channel._id)
       ? await axios.put(`${process.env.REACT_APP_API_URL}/users/unsub/${channel._id}`, { token: token })
       : await axios.put(`${process.env.REACT_APP_API_URL}/users/sub/${channel._id}`, { token: token });
     dispatch(subscription(channel._id));
+    }else{
+     alert("Please Login First")
+     navigate("/signin")
+    }
   };
   //console.log(currentUser)
   //console.log(path)
@@ -266,9 +248,8 @@ const Video = () => {
         <Hr />
         <Comments videoId={currentVideo?._id} comment={comment}/>
       </Content>
-      {/* {console.log(currentVideo.tags)} */}
-      <Recommendation tags={currentVideo?.tags}/>  
-      <Recommendation />    
+      {console.log("tags => ",currentVideo.tags)}
+      <Recommendation tags={currentVideo?.tags}/>    
     </Container>
   );
 };

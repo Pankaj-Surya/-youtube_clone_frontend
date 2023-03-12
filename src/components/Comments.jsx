@@ -68,10 +68,16 @@ const Comments = ({ videoId }) => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-    if (desc !== "") {
-      mutation.mutate({ desc, videoId, token: localStorage.getItem("access_token") });
-      setDesc("");
+    if(currentUser !=null){
+      if (desc !== "") {
+
+        mutation.mutate({ desc, videoId, token: localStorage.getItem("access_token") });
+        setDesc("");
+      }
+    }else{
+      alert("Please Login to add Comment")
     }
+   
   }
 
 
